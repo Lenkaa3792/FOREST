@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -54,6 +54,29 @@ def ussd():
         db.session.commit()
 
         return f"END Thank you, {name}! Your submission has been recorded."
+
+@app.route("/get_report", methods=["GET"])
+def get_report():
+    # Fetch data from the database (example: get the total number of trees planted)
+    total_trees_planted = TreeSubmission.query.with_entities(db.func.sum(TreeSubmission.trees_planted)).scalar()
+
+    return jsonify({"total_trees_planted": total_trees_planted})
+
+@app.route("/get_submissions", methods=["GET"])
+def get_submissions():
+    submissions = TreeSubmission.query.all()
+    submission_list = []
+    for submission in submissions:
+        submission_list.append({
+            'id': submission.id,
+            'user_name': submission.user_name,
+            'tree_name': submission.tree_name,
+            'region': submission.region,
+            'county': submission.county,
+            'trees_planted': submission.trees_planted,
+            'phone_number': submission.phone_number
+        })
+    return jsonify(submission_list)
 
 if __name__ == "__main__":
     app.run(debug=True)

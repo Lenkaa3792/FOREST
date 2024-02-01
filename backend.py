@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -18,27 +18,8 @@ class TreeSubmission(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route("/get_report", methods=["GET"])
-def get_report():
-    # Fetch data from the database (example: get the total number of trees planted)
-    total_trees_planted = TreeSubmission.query.with_entities(db.func.sum(TreeSubmission.trees_planted)).scalar()
+# ... (rest of your code)
 
-    return jsonify({"total_trees_planted": total_trees_planted})
-
-@app.route("/get_submissions", methods=["GET"])
-def get_submissions():
-    # Fetch all submissions from the database
-    submissions = TreeSubmission.query.all()
-
-    # Convert submissions to a list of dictionaries
-    submissions_list = [{"user_name": submission.user_name,
-                         "tree_name": submission.tree_name,
-                         "region": submission.region,
-                         "county": submission.county,
-                         "trees_planted": submission.trees_planted,
-                         "phone_number": submission.phone_number} for submission in submissions]
-
-    return jsonify({"submissions": submissions_list})
-
+# Run the application if executed directly
 if __name__ == "__main__":
     app.run(debug=True)
